@@ -40,9 +40,10 @@ dbRef.on('value', (snapshot) => {
 });
 
 
-app.get("/history", async (req, res) => {
+app.get("/day", async (req, res) => {
     const result = await getAverageDay()
     eachDay.add(result)
+    res.status(400).send(result)
 })
 //FIND AVG
 //Maybe we have to separate the function to get the average of period of time month, day or week
@@ -73,6 +74,7 @@ async function getAverageDay() {
 app.get('/week', async (req, res) => {
     const result = await getAverageWeek()
     weekRef.add(result)
+    res.status(400).send(result)
 })
 
 //Week will get average of each day
