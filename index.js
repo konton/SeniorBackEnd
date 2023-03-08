@@ -23,8 +23,9 @@ const dbRef = admin.database().ref('Sensor');
 
 // Get a reference to your Firestore location
 const firestore = admin.firestore();
-const docRef = firestore.collection('history');
-
+const dayRef = firestore.collection('day');
+const eachDay = firestore.collection('eachDay');
+const weekRef = firestore.collection('week');
 
 
 
@@ -33,19 +34,24 @@ dbRef.on('value', (snapshot) => {
     const data = snapshot.val();
     // Update the corresponding Firestore document
     console.log("change");
-    docRef.add(data);
-    const result = getAverage().then((result) => { console.log("result", result) });
+    dayRef.add(data);
+    // const result = getAverageDay().then((result) => { console.log("result", result) });
 
 });
 
+
+app.get("/history", async (req, res) => {
+    const result = await getAverageDay()
+    eachDay.add(result)
+})
 //FIND AVG
 //Maybe we have to separate the function to get the average of period of time month, day or week
-async function getAverage() {
-    const querySnapshot = await docRef.get();
+async function getAverageDay() {
+    const querySnapshot = await dayRef.get();
     let rr = 0;
     let hr = 0;
     let spo2 = 0;
-    let temp = 0;
+    let bodytemp = 0;
     const values = []
     let sum = {}
     querySnapshot.forEach(doc => {
@@ -54,14 +60,43 @@ async function getAverage() {
         rr += parseInt(data.rr.data);
         hr += parseInt(data.hr.data);
         spo2 += parseInt(data.spo2.data);
-        temp += parseInt(data.bodytemp.data);
+        bodytemp += parseInt(data.bodytemp.data);
         values.push(data.rr.data)
 
         // hr += data.hr;
         // spo2 += data.spo2;
         // temp += data.temp;
     });
-    return sum = Object.assign(sum, { rr: rr / values.length, hr: hr / values.length, spo2: spo2 / values.length, temp: temp / values.length })
+    return sum = Object.assign(sum, { rr: rr / values.length, hr: hr / values.length, spo2: spo2 / values.length, bodytemp: bodytemp / values.length })
+}
+
+app.get('/week', async (req, res) => {
+    const result = await getAverageWeek()
+    weekRef.add(result)
+})
+
+//Week will get average of each day
+async function getAverageWeek() {
+    const querySnapshot = await eachDay.get();
+    let rr = 0;
+    let hr = 0;
+    let spo2 = 0;
+    let bodytemp = 0;
+    let sum = {}
+    const values = []
+    querySnapshot.forEach(doc => {
+        const data = doc.data();
+        rr += parseInt(data.rr);
+        hr += parseInt(data.hr);
+        spo2 += parseInt(data.spo2);
+        bodytemp += parseInt(data.bodytemp);
+        values.push(data.rr)
+
+        // hr += data.hr;
+        // spo2 += data.spo2;
+        // temp += data.temp;
+    });
+    return sum = Object.assign(sum, { rr: rr / values.length, hr: hr / values.length, spo2: spo2 / values.length, bodytemp: bodytemp / values.length })
 }
 
 
