@@ -14,7 +14,7 @@ admin.initializeApp({
 
 // Get a reference to your Realtime Database location
 const dbRef = admin.database().ref('Sensor');
-
+const redRef = admin.database().ref('Red');
 // app.get('/', (req, res) => {
 //     dbRef.once("value", function (snapshot) {
 //         res.send(snapshot.val());
@@ -33,11 +33,20 @@ const weekRef = firestore.collection('week');
 dbRef.on('value', (snapshot) => {
     const data = snapshot.val();
     // Update the corresponding Firestore document
-    console.log("change");
     dayRef.add(data);
     // const result = getAverageDay().then((result) => { console.log("result", result) });
 
 });
+
+redRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    // Update the corresponding Firestore document
+    console.log("change");
+    console.log(data.value)
+    // const result = getAverageDay().then((result) => { console.log("result", result) });
+
+});
+
 
 
 app.get("/day", async (req, res) => {
