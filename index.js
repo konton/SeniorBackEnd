@@ -102,7 +102,7 @@ async function getAverageDay() {
 
     });
 
-    return sum = Object.assign(sum, { rr: rr / values.length, hr: hr / values.length, spo2: spo2 / values.length, bodytemp: bodytemp / values.length, date: dateTime() })
+    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: dateTime() })
 }
 
 app.get('/week', async (req, res) => {
@@ -129,7 +129,7 @@ async function getAverageWeek() {
         values.push(data.rr)
 
     });
-    return sum = Object.assign(sum, { rr: rr / values.length, hr: hr / values.length, spo2: spo2 / values.length, bodytemp: bodytemp / values.length, date: dateTime() })
+    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: dateTime() })
 }
 
 const dateTime = () => {
