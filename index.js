@@ -20,6 +20,7 @@ const redRef = admin.database().ref('Red');
 let options = {
     scriptPath: 'C:/Users/konto/',
 };
+
 // redRef.once('value').then((snapshot) => {
 //     console.log(snapshot.val())
 // })
@@ -44,9 +45,10 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
 
 schedule.scheduleJob('0 0 0 * * 7', async () => {
     console.log("Average Week!!")
-    const result = await getAverageDay()
+    const result = await getAverageWeek()
     eachDay.add(result)
 })
+
 // Listen for changes in the Realtime Database
 dbRef.on('value', async (snapshot) => {
     const data = snapshot.val();
@@ -61,12 +63,13 @@ dbRef.on('value', async (snapshot) => {
 
 redRef.on('value', (snapshot) => {
     const data = snapshot.val().value;
-    const length = Object.keys(data).length;
-    if (length > 1000) {
-        PythonShell.run('DetectChange.py', options).then(messages => {
-            dbRef.update({ rr: { data: messages[0] } })
-        });
-    }
+    //Open when we want to use the python script
+    // const length = Object.keys(data).length;
+    // if (length > 1000) {
+    //     PythonShell.run('DetectChange.py', options).then(messages => {
+    //         dbRef.update({ rr: { data: messages[0] } })
+    //     });
+    // }
     // console.log(length)
 
     // Update the corresponding Firestore document
@@ -78,11 +81,6 @@ redRef.on('value', (snapshot) => {
 
 
 
-// app.get("/day", async (req, res) => {
-//     const result = await getAverageDay()
-//     eachDay.add(result)
-//     res.status(400).send(result)
-// })
 //FIND AVG
 //Maybe we have to separate the function to get the average of period of time month, day or week
 async function getAverageDay() {
@@ -140,7 +138,7 @@ const dateTime = () => {
     let date = date_ob.getDate();
     let month = date_ob.getMonth() + 1;
     let year = date_ob.getFullYear();
-    return storeDate = year + "-" + month + "-" + date;
+    return storeDate = date + "/" + month + "/" + year;
 }
 
 
