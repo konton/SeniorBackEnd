@@ -36,6 +36,7 @@ const firestore = admin.firestore();
 const dayRef = firestore.collection('day');
 const eachDay = firestore.collection('eachDay');
 const weekRef = firestore.collection('week');
+const error = firestore.collection('error');
 // run everyday at midnight
 schedule.scheduleJob('0 0 0 * * *', async () => {
     console.log("midnight!!")
@@ -56,6 +57,39 @@ dbRef.on('value', async (snapshot) => {
 
     data.rr.data = parseInt(data.rr.data);
     dayRef.add(data);
+    if (data.rr.data >= 25 || data.rr.data <= 8) {
+        console.log("RR Danger")
+        error.add({ type: "Danger", data: data.rr.data, date: dateTime() })
+    } else if (data.rr.data <= 24 && data.rr.data >= 21) {
+        error.add({ type: "Warning", data: data.rr.data, date: dateTime() })
+        console.log("RR Warning")
+
+    }
+
+    if (data.hr.data >= 131 || data.hr.data <= 40) {
+        error.add({ type: "Danger", data: data.hr.data, date: dateTime() })
+        console.log("HR Danger")
+
+    } else if (data.hr.data <= 130 && data.hr.data >= 111) {
+        console.log("HR Warning")
+        error.add({ type: "Warning", data: data.hr.data, date: dateTime() })
+    }
+
+    if (data.spo2.data <= 91) {
+        error.add({ type: "Danger", data: data.spo2.data, date: dateTime() })
+        console.log("Spo2 Danger")
+    } else if (data.spo2.data <= 93 && data.spo2.data >= 92) {
+        error.add({ type: "Warning", data: data.spo2.data, date: dateTime() })
+        console.log("Spo2 Warning")
+    }
+
+    if (data.bodytemp.data <= 35) {
+        error.add({ type: "Danger", data: data.bodytemp.data, date: dateTime() })
+        console.log("Bodytemp Danger")
+    } else if (data.bodytemp.data >= 39.1) {
+        error.add({ type: "Warning", data: data.bodytemp.data, date: dateTime() })
+        console.log("Bodytemp Warning")
+    }
     // res.status(400).send(result)
     // const result = getAverageDay().then((result) => { console.log("result", result) });
 
@@ -65,7 +99,7 @@ redRef.on('value', (snapshot) => {
     const data = snapshot.val().value;
     //Open when we want to use the python script
     // const length = Object.keys(data).length;
-    // if (length > 1000) {
+    // if (length > 1300) {
     //     PythonShell.run('DetectChange.py', options).then(messages => {
     //         dbRef.update({ rr: { data: messages[0] } })
     //     });
@@ -102,7 +136,7 @@ async function getAverageDay() {
 
     });
 
-    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: dateTime() })
+    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: date() })
 }
 
 app.get('/week', async (req, res) => {
@@ -129,10 +163,10 @@ async function getAverageWeek() {
         values.push(data.rr)
 
     });
-    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: dateTime() })
+    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: date() })
 }
 
-const dateTime = () => {
+const date = () => {
     let ts = Date.now();
     let date_ob = new Date(ts);
     let date = date_ob.getDate();
@@ -141,6 +175,16 @@ const dateTime = () => {
     return storeDate = date + "/" + month + "/" + year;
 }
 
+const dateTime = () => {
+    let ts = Date.now();
+    let date_ob = new Date(ts);
+    let date = date_ob.getDate();
+    let month = date_ob.getMonth() + 1;
+    let year = date_ob.getFullYear();
+    let hours = date_ob.getHours();
+    let minutes = date_ob.getMinutes();
+    return storeDate = date + "/" + month + "/" + year + " " + hours + ":" + minutes;
+}
 
 app.listen(3030, function () {
     console.log("Server started");
