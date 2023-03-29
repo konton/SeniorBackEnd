@@ -47,13 +47,16 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
 schedule.scheduleJob('0 0 0 * * 7', async () => {
     console.log("Average Week!!")
     const result = await getAverageWeek()
-    eachDay.add(result)
+    weekRef.add(result)
 })
+
 
 // Listen for changes in the Realtime Database
 dbRef.on('value', async (snapshot) => {
     const data = snapshot.val();
     // Update the corresponding Firestore document
+    const result = await getAverageWeek()
+    weekRef.add(result)
 
     data.rr.data = parseInt(data.rr.data);
     dayRef.add(data);
@@ -163,7 +166,7 @@ async function getAverageWeek() {
         values.push(data.rr)
 
     });
-    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: date() })
+    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: getWeekOfMonth() })
 }
 
 const date = () => {
@@ -186,9 +189,19 @@ const dateTime = () => {
     return storeDate = date + "/" + month + "/" + year + " " + hours + ":" + minutes;
 }
 
+const getWeekOfMonth = () => {
+    let ts = Date.now();
+    let date_ob = new Date(ts);
+    let month = date_ob.getMonth() + 1;
+    let adjustedDate = date_ob.getDate() + date_ob.getDay();
+    let prefixes = ['0', '1', '2', '3', '4', '5'];
+    return "Week " + prefixes[0 | adjustedDate / 7] + '/' + month;
+}
+
 app.listen(3030, function () {
     console.log("Server started");
 });
+
 
 
 
