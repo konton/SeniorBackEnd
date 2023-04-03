@@ -53,6 +53,20 @@ def findRR():
     note = []
 
     red = ref.get()
+    avgdata = np.mean(red)
+    if(avgdata>1400000 and avgdata<1500000):
+        lowcut=0.3
+        highcut=0.6
+        order=4
+    elif (avgdata>1700000 and avgdata<1800000):
+        lowcut=0.3
+        highcut=0.6
+        order=2
+    elif (avgdata>1800000):
+        lowcut=0.5
+        highcut=0.6
+        order=2
+
     filtered_red = bessel_bandpass_filter(red, lowcut, highcut, fs, order)
     # Find the minimum and maximum peak-to-peak amplitudes
     min_amplitude = filtered_red.min()

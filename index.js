@@ -101,18 +101,23 @@ dbRef.on('value', async (snapshot) => {
 redRef.on('value', (snapshot) => {
     const data = snapshot.val().value;
     //Open when we want to use the python script
-    // const length = Object.keys(data).length;
-    // if (length > 1300) {
-    //     PythonShell.run('DetectChange.py', options).then(messages => {
-    //         dbRef.update({ rr: { data: messages[0] } })
-    //     });
-    // }
-    // console.log(length)
+    console.log(data)
+    if (data != undefined) {
+        const length = Object.keys(data).length;
 
-    // Update the corresponding Firestore document
-    // console.log("change");
-    // console.log(data.value)
-    // const result = getAverageDay().then((result) => { console.log("result", result) });
+        if (length > 998) {
+            PythonShell.run('DetectChange.py', options).then(messages => {
+                console.log('return msg', messages)
+                dbRef.update({ rr: { data: String(messages[0]) } })
+            });
+        }
+        console.log(length)
+
+        // Update the corresponding Firestore document
+        // console.log("change");
+        // console.log(data.value)
+        // const result = getAverageDay().then((result) => { console.log("result", result) });
+    }
 
 });
 
@@ -201,7 +206,4 @@ const getWeekOfMonth = () => {
 app.listen(3030, function () {
     console.log("Server started");
 });
-
-
-
 
