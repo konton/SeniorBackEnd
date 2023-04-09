@@ -48,8 +48,6 @@ schedule.scheduleJob('0 0 0 * * 7', async () => {
 dbRef.on('value', async (snapshot) => {
     const data = snapshot.val();
     // Update the corresponding Firestore document
-    const result = await getAverageWeek()
-    weekRef.add(result)
 
     data.rr.data = parseInt(data.rr.data);
     dayRef.add(data);
