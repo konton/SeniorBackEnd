@@ -180,7 +180,7 @@ const date = () => {
     let date = date_ob.getDate();
     let month = date_ob.getMonth() + 1;
     let year = date_ob.getFullYear();
-    return storeDate = date + "/" + month + "/" + year;
+    return storeDate = date + "-" + month + "-" + year;
 }
 
 const dateTime = () => {
@@ -191,7 +191,7 @@ const dateTime = () => {
     let year = date_ob.getFullYear();
     let hours = date_ob.getHours();
     let minutes = date_ob.getMinutes();
-    return storeDate = date + "/" + month + "/" + year + " " + hours + ":" + minutes;
+    return storeDate = date + "-" + month + "-" + year + " " + hours + ":" + minutes;
 }
 
 const getWeekOfMonth = () => {
@@ -200,7 +200,7 @@ const getWeekOfMonth = () => {
     let month = date_ob.getMonth() + 1;
     let adjustedDate = date_ob.getDate() + date_ob.getDay();
     let prefixes = ['0', '1', '2', '3', '4', '5'];
-    return "Week " + prefixes[0 | adjustedDate / 7] + '/' + month;
+    return "Week " + prefixes[0 | adjustedDate / 7] + '-' + month;
 }
 
 app.listen(3030, function () {
