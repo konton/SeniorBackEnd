@@ -21,16 +21,6 @@ let options = {
     scriptPath: 'C:/Users/konto/',
 };
 
-// redRef.once('value').then((snapshot) => {
-//     console.log(snapshot.val())
-// })
-
-// app.get('/', (req, res) => {
-//     dbRef.once("value", function (snapshot) {
-//         res.send(snapshot.val());
-//     });
-// })
-
 // Get a reference to your Firestore location
 const firestore = admin.firestore();
 const dayRef = firestore.collection('day');
@@ -62,35 +52,35 @@ dbRef.on('value', async (snapshot) => {
     dayRef.add(data);
     if (data.rr.data >= 25 || data.rr.data <= 8) {
         console.log("RR Danger")
-        error.add({ type: "Danger", data: data.rr.data, date: dateTime(), type: "RR" })
+        error.add({ level: "Danger", data: data.rr.data, date: date(), type: "RR", time: Time() })
     } else if (data.rr.data <= 24 && data.rr.data >= 21) {
-        error.add({ type: "Warning", data: data.rr.data, date: dateTime(), type: "RR" })
+        error.add({ level: "Warning", data: data.rr.data, date: date(), type: "RR", time: Time() })
         console.log("RR Warning")
 
     }
 
     if (data.hr.data >= 131 || data.hr.data <= 40) {
-        error.add({ type: "Danger", data: data.hr.data, date: dateTime(), type: "Hr" })
+        error.add({ level: "Danger", data: data.hr.data, date: date(), type: "Hr", time: Time() })
         console.log("HR Danger")
 
     } else if (data.hr.data <= 130 && data.hr.data >= 111) {
         console.log("HR Warning")
-        error.add({ type: "Warning", data: data.hr.data, date: dateTime(), type: "Hr" })
+        error.add({ level: "Warning", data: data.hr.data, date: date(), type: "Hr", time: Time() })
     }
 
     if (data.spo2.data <= 91) {
-        error.add({ type: "Danger", data: data.spo2.data, date: dateTime(), type: "Spo2" })
+        error.add({ level: "Danger", data: data.spo2.data, date: date(), type: "Spo2", time: Time() })
         console.log("Spo2 Danger")
     } else if (data.spo2.data <= 93 && data.spo2.data >= 92) {
-        error.add({ type: "Warning", data: data.spo2.data, date: dateTime(), type: "Spo2" })
+        error.add({ level: "Warning", data: data.spo2.data, date: date(), type: "Spo2", time: Time() })
         console.log("Spo2 Warning")
     }
 
     if (data.bodytemp.data <= 35) {
-        error.add({ type: "Danger", data: data.bodytemp.data, date: dateTime(), type: "BodyTemp" })
+        error.add({ level: "Danger", data: data.bodytemp.data, date: date(), type: "BodyTemp", time: Time() })
         console.log("Bodytemp Danger")
     } else if (data.bodytemp.data >= 39.1) {
-        error.add({ type: "Warning", data: data.bodytemp.data, date: dateTime(), type: "BodyTemp" })
+        error.add({ level: "Warning", data: data.bodytemp.data, date: date(), type: "BodyTemp", time: Time() })
         console.log("Bodytemp Warning")
     }
     // res.status(400).send(result)
@@ -183,15 +173,12 @@ const date = () => {
     return storeDate = year + "-" + month + "-" + date;
 }
 
-const dateTime = () => {
+const Time = () => {
     let ts = Date.now();
     let date_ob = new Date(ts);
-    let date = date_ob.getDate();
-    let month = date_ob.getMonth() + 1;
-    let year = date_ob.getFullYear();
     let hours = date_ob.getHours();
     let minutes = date_ob.getMinutes();
-    return storeDate = year + "-" + month + "-" + date + " " + hours + ":" + minutes;
+    return storeDate = hours + ":" + minutes;
 }
 
 const getWeekOfMonth = () => {
