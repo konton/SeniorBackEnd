@@ -62,35 +62,35 @@ dbRef.on('value', async (snapshot) => {
     dayRef.add(data);
     if (data.rr.data >= 25 || data.rr.data <= 8) {
         console.log("RR Danger")
-        error.add({ type: "Danger", data: data.rr.data, date: dateTime() })
+        error.add({ type: "Danger", data: data.rr.data, date: dateTime(), type: "RR" })
     } else if (data.rr.data <= 24 && data.rr.data >= 21) {
-        error.add({ type: "Warning", data: data.rr.data, date: dateTime() })
+        error.add({ type: "Warning", data: data.rr.data, date: dateTime(), type: "RR" })
         console.log("RR Warning")
 
     }
 
     if (data.hr.data >= 131 || data.hr.data <= 40) {
-        error.add({ type: "Danger", data: data.hr.data, date: dateTime() })
+        error.add({ type: "Danger", data: data.hr.data, date: dateTime(), type: "Hr" })
         console.log("HR Danger")
 
     } else if (data.hr.data <= 130 && data.hr.data >= 111) {
         console.log("HR Warning")
-        error.add({ type: "Warning", data: data.hr.data, date: dateTime() })
+        error.add({ type: "Warning", data: data.hr.data, date: dateTime(), type: "Hr" })
     }
 
     if (data.spo2.data <= 91) {
-        error.add({ type: "Danger", data: data.spo2.data, date: dateTime() })
+        error.add({ type: "Danger", data: data.spo2.data, date: dateTime(), type: "Spo2" })
         console.log("Spo2 Danger")
     } else if (data.spo2.data <= 93 && data.spo2.data >= 92) {
-        error.add({ type: "Warning", data: data.spo2.data, date: dateTime() })
+        error.add({ type: "Warning", data: data.spo2.data, date: dateTime(), type: "Spo2" })
         console.log("Spo2 Warning")
     }
 
     if (data.bodytemp.data <= 35) {
-        error.add({ type: "Danger", data: data.bodytemp.data, date: dateTime() })
+        error.add({ type: "Danger", data: data.bodytemp.data, date: dateTime(), type: "BodyTemp" })
         console.log("Bodytemp Danger")
     } else if (data.bodytemp.data >= 39.1) {
-        error.add({ type: "Warning", data: data.bodytemp.data, date: dateTime() })
+        error.add({ type: "Warning", data: data.bodytemp.data, date: dateTime(), type: "BodyTemp" })
         console.log("Bodytemp Warning")
     }
     // res.status(400).send(result)
