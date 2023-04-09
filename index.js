@@ -23,7 +23,7 @@ let options = {
 
 // Get a reference to your Firestore location
 const firestore = admin.firestore();
-const dayRef = firestore.collection('day');
+const dayRef = firestore.collection('duringDay');
 const eachDay = firestore.collection('eachDay');
 const weekRef = firestore.collection('week');
 const error = firestore.collection('error');
@@ -96,11 +96,9 @@ irRef.on('value', (snapshot) => {
         const length = Object.keys(data).length;
         if (length > 1400) {
             PythonShell.run('DetectChange.py', options).then(messages => {
-                console.log('return msg', messages)
                 dbRef.update({ rr: { data: String(messages[0]) } })
             });
         }
-        console.log(length)
     }
 
 });
@@ -142,7 +140,11 @@ async function getAverageDay() {
         .catch((error) => {
             console.error('Error clearing collection:', error);
         });
-    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: date() })
+    return sum = Object.assign(sum, {
+        rr: parseInt(rr / values.length),
+        hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length),
+        bodytemp: parseInt(bodytemp / values.length), date: date()
+    })
 }
 
 
@@ -173,7 +175,11 @@ async function getAverageWeek() {
     if (values.length == 0) {
         return undefined
     } else {
-        return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: getWeekOfMonth() })
+        return sum = Object.assign(sum, {
+            rr: parseInt(rr / values.length),
+            hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length),
+            bodytemp: parseInt(bodytemp / values.length), date: getWeekOfMonth()
+        })
     }
 }
 
