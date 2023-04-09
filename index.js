@@ -15,7 +15,7 @@ admin.initializeApp({
 
 // Get a reference to your Realtime Database location
 const dbRef = admin.database().ref('Sensor');
-const redRef = admin.database().ref('Red');
+const irRef = admin.database().ref('Red');
 
 let options = {
     scriptPath: 'C:/Users/konto/',
@@ -37,9 +37,12 @@ schedule.scheduleJob('0 0 0 * * *', async () => {
 schedule.scheduleJob('0 0 0 * * 7', async () => {
     console.log("Average Week!!")
     const result = await getAverageWeek()
-    weekRef.add(result)
+    if (result != undefined) {
+        weekRef.add(result)
+    }
 })
 
+// getAverageWeek();
 
 // Listen for changes in the Realtime Database
 dbRef.on('value', async (snapshot) => {
@@ -88,25 +91,18 @@ dbRef.on('value', async (snapshot) => {
 
 });
 
-redRef.on('value', (snapshot) => {
+irRef.on('value', (snapshot) => {
     const data = snapshot.val().value;
     //Open when we want to use the python script
-    console.log(data)
     if (data != undefined) {
         const length = Object.keys(data).length;
-
-        if (length > 998) {
+        if (length > 1400) {
             PythonShell.run('DetectChange.py', options).then(messages => {
                 console.log('return msg', messages)
                 dbRef.update({ rr: { data: String(messages[0]) } })
             });
         }
         console.log(length)
-
-        // Update the corresponding Firestore document
-        // console.log("change");
-        // console.log(data.value)
-        // const result = getAverageDay().then((result) => { console.log("result", result) });
     }
 
 });
@@ -133,15 +129,24 @@ async function getAverageDay() {
         values.push(data.rr.data)
 
     });
-
+    dayRef.get()
+        .then((querySnapshot) => {
+            // Delete each document in the collection
+            const batch = firestore.batch();
+            querySnapshot.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+            return batch.commit();
+        })
+        .then(() => {
+            console.log('Collection cleared successfully');
+        })
+        .catch((error) => {
+            console.error('Error clearing collection:', error);
+        });
     return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: date() })
 }
 
-app.get('/week', async (req, res) => {
-    const result = await getAverageWeek()
-    weekRef.add(result)
-    res.status(400).send(result)
-})
 
 //Week will get average of each day
 async function getAverageWeek() {
@@ -151,17 +156,27 @@ async function getAverageWeek() {
     let spo2 = 0;
     let bodytemp = 0;
     let sum = {}
+    let DOM = 0;
     const values = []
     querySnapshot.forEach(doc => {
         const data = doc.data();
-        rr += parseInt(data.rr);
-        hr += parseInt(data.hr);
-        spo2 += parseInt(data.spo2);
-        bodytemp += parseInt(data.bodytemp);
-        values.push(data.rr)
+        let ts = Date.now();
+        let currentWeek = getWeekOfMonthFromData(ts);
+        DOM = getWeekOfMonthFromData(data.date);
+        if (currentWeek == DOM) {
+            rr += parseInt(data.rr);
+            hr += parseInt(data.hr);
+            spo2 += parseInt(data.spo2);
+            bodytemp += parseInt(data.bodytemp);
+            values.push(data.rr)
+        }
 
     });
-    return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: getWeekOfMonth() })
+    if (values.length == 0) {
+        return undefined
+    } else {
+        return sum = Object.assign(sum, { rr: parseInt(rr / values.length), hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length), bodytemp: parseInt(bodytemp / values.length), date: getWeekOfMonth() })
+    }
 }
 
 const date = () => {
@@ -184,10 +199,24 @@ const Time = () => {
 const getWeekOfMonth = () => {
     let ts = Date.now();
     let date_ob = new Date(ts);
+    let monthStart = new Date(date_ob.getFullYear(), date_ob.getMonth(), 1);
+    let firstWeekDay = (monthStart.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
+    let daysBeforeFirstWeek = (7 - firstWeekDay) % 7;
+    let daysSinceFirstWeek = date_ob.getDate() - 1 - daysBeforeFirstWeek;
+    let weekOfMonth = Math.floor(daysSinceFirstWeek / 7) + 1;
     let month = date_ob.getMonth() + 1;
-    let adjustedDate = date_ob.getDate() + date_ob.getDay();
-    let prefixes = ['0', '1', '2', '3', '4', '5'];
-    return "Week " + prefixes[0 | adjustedDate / 7] + '-' + month;
+    return "Week " + weekOfMonth + '-' + month;
+}
+
+const getWeekOfMonthFromData = (date) => {
+    let date_ob = new Date(date);
+    let monthStart = new Date(date_ob.getFullYear(), date_ob.getMonth(), 1);
+    let firstWeekDay = (monthStart.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
+    let daysBeforeFirstWeek = (7 - firstWeekDay) % 7;
+    let daysSinceFirstWeek = date_ob.getDate() - 1 - daysBeforeFirstWeek;
+    let weekOfMonth = Math.floor(daysSinceFirstWeek / 7) + 1;
+    let month = date_ob.getMonth() + 1;
+    return weekOfMonth + '-' + month;
 }
 
 app.listen(3030, function () {
