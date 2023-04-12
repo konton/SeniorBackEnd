@@ -46,6 +46,7 @@ schedule.scheduleJob('0 0 0 * * 7', async () => {
 
 // Listen for changes in the Realtime Database
 dbRef.on('value', async (snapshot) => {
+
     const data = snapshot.val();
     // Update the corresponding Firestore document
 
@@ -77,37 +78,39 @@ dbRef.on('value', async (snapshot) => {
         console.log("Spo2 Warning")
     }
 
-    if (data.bodytemp.data <= 35) {
+    if (data.bodytemp.data <= 33 || data.bodytemp.data >= 38) {
         error.add({ level: "Danger", data: data.bodytemp.data, date: date(), type: "BodyTemp", time: Time() })
         console.log("Bodytemp Danger")
-    } else if (data.bodytemp.data >= 39.1) {
+    } else if (data.bodytemp.data >= 37) {
         error.add({ level: "Warning", data: data.bodytemp.data, date: date(), type: "BodyTemp", time: Time() })
         console.log("Bodytemp Warning")
     }
     // res.status(400).send(result)
     // const result = getAverageDay().then((result) => { console.log("result", result) });
-
 });
 
 irRef.on('value', (snapshot) => {
+
     const data = snapshot.val().value;
     //Open when we want to use the python script
     if (data != undefined) {
         const length = Object.keys(data).length;
-        if (length > 1400) {
+        if (length >= 1400) {
             PythonShell.run('DetectChange.py', options).then(messages => {
+                console.log(String(messages[0]));
                 dbRef.update({ rr: { data: String(messages[0]) } })
             });
         }
     }
 
-});
 
+});
 
 
 //FIND AVG
 //Maybe we have to separate the function to get the average of period of time month, day or week
 async function getAverageDay() {
+
     const querySnapshot = await dayRef.get();
     let rr = 0;
     let hr = 0;
@@ -140,6 +143,7 @@ async function getAverageDay() {
         .catch((error) => {
             console.error('Error clearing collection:', error);
         });
+
     return sum = Object.assign(sum, {
         rr: parseInt(rr / values.length),
         hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length),
@@ -150,6 +154,8 @@ async function getAverageDay() {
 
 //Week will get average of each day
 async function getAverageWeek() {
+    console.time("Time taken");
+
     const querySnapshot = await eachDay.get();
     let rr = 0;
     let hr = 0;
@@ -172,6 +178,7 @@ async function getAverageWeek() {
         }
 
     });
+    console.timeEnd("Time taken");
     if (values.length == 0) {
         return undefined
     } else {
