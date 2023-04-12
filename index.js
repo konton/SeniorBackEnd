@@ -154,8 +154,6 @@ async function getAverageDay() {
 
 //Week will get average of each day
 async function getAverageWeek() {
-    console.time("Time taken");
-
     const querySnapshot = await eachDay.get();
     let rr = 0;
     let hr = 0;
@@ -163,13 +161,21 @@ async function getAverageWeek() {
     let bodytemp = 0;
     let sum = {}
     let DOM = 0;
+    let count = 0;
+    let firstDay = 0;
     const values = []
     querySnapshot.forEach(doc => {
         const data = doc.data();
         let ts = Date.now();
         let currentWeek = getWeekOfMonthFromData(ts);
         DOM = getWeekOfMonthFromData(data.date);
+
         if (currentWeek == DOM) {
+            console.log("HERE");
+            if (count == 0) {
+                firstDay = data.date
+                count = 1;
+            }
             rr += parseInt(data.rr);
             hr += parseInt(data.hr);
             spo2 += parseInt(data.spo2);
@@ -178,14 +184,13 @@ async function getAverageWeek() {
         }
 
     });
-    console.timeEnd("Time taken");
     if (values.length == 0) {
         return undefined
     } else {
         return sum = Object.assign(sum, {
             rr: parseInt(rr / values.length),
             hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length),
-            bodytemp: parseInt(bodytemp / values.length), date: getWeekOfMonth()
+            bodytemp: parseInt(bodytemp / values.length), date: getWeekOfMonth(), date: firstDay
         })
     }
 }
