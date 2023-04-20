@@ -201,7 +201,9 @@ const date = () => {
     let date = date_ob.getDate();
     let month = date_ob.getMonth() + 1;
     let year = date_ob.getFullYear();
-    return storeDate = year + "-" + month + "-" + date;
+    if (month < 10) {
+        return storeDate = year + "-0" + month + "-" + date;
+    } else return storeDate = year + "-" + month + "-" + date;
 }
 
 const Time = () => {
