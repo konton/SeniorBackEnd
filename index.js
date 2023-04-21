@@ -42,7 +42,6 @@ schedule.scheduleJob('0 0 0 * * 7', async () => {
     }
 })
 
-// getAverageWeek();
 
 // Listen for changes in the Realtime Database
 dbRef.on('value', async (snapshot) => {
@@ -118,7 +117,6 @@ async function getAverageDay() {
     let bodytemp = 0;
     const values = []
     let sum = {}
-
     querySnapshot.forEach(doc => {
         const data = doc.data();
         rr += parseInt(data.rr.data);
@@ -143,7 +141,6 @@ async function getAverageDay() {
         .catch((error) => {
             console.error('Error clearing collection:', error);
         });
-
     return sum = Object.assign(sum, {
         rr: parseInt(rr / values.length),
         hr: parseInt(hr / values.length), spo2: parseInt(spo2 / values.length),
