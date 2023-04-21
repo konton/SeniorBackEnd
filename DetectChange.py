@@ -8,7 +8,7 @@ from numpy import savetxt
 
 
 cred = credentials.Certificate(
-    r"C:\Users\konto\OneDrive\เดสก์ท็อป\Senior\testserver/admin.json")
+    r"/Users/dome/Desktop/Senior Project/SeniorBackEnd/admin.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://fluted-arch-341414-default-rtdb.asia-southeast1.firebasedatabase.app/'
 })
