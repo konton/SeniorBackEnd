@@ -14,21 +14,6 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-# ref = db.reference('Red/value')
-
-# # Define a callback function to handle changes
-# def handle_change(event):
-#     print("Change detected!")
-# #     print(event.data)
-#     print(event)
-
-# # Set up a stream to listen for changes
-# stream = ref.get(handle_change)
-
-# # Keep the script running to continue listening for changes
-# while True:
-#     pass
-
 
 def bessel_bandpass_filter(data, lowcut, highcut, fs, order=4):
     nyquist = 0.5 * fs
