@@ -52,7 +52,7 @@ dbRef.on('value', async (snapshot) => {
     const data = snapshot.val();
     // Update the corresponding Firestore document
 
-    data.rr.data = parseInt(data.rr.data);
+    data.rr.data = String(data.rr.data);
     dayRef.add(data);
     if (data.rr.data >= 25 || data.rr.data <= 8) {
         console.log("RR Danger")
@@ -100,7 +100,7 @@ irRef.on('value', (snapshot) => {
         if (length >= 1400) {
             PythonShell.run('DetectChange.py', options).then(messages => {
                 console.log(String(messages[0]));
-                dbRef.update({ rr: { data: String(messages[0]) } })
+                dbRef.update({ rr: { data: parseInt(messages[0]) } })
             });
         }
     }
@@ -211,6 +211,7 @@ const Time = () => {
     let date_ob = new Date(ts);
     let hours = date_ob.getHours();
     let minutes = date_ob.getMinutes();
+    if (minutes < 10) minutes = "0" + minutes;
     return storeDate = hours + ":" + minutes;
 }
 
