@@ -17,12 +17,12 @@ admin.initializeApp({
 const dbRef = admin.database().ref('Sensor');
 const irRef = admin.database().ref('Red');
 
-// let options = {
-//     scriptPath: 'C:/Users/konto/',
-// };
 let options = {
-    scriptPath: '/Users/dome/Desktop/Senior Project/SeniorBackEnd/',
+    scriptPath: 'C:/Users/konto/',
 };
+// let options = {
+//     scriptPath: '/Users/dome/Desktop/Senior Project/SeniorBackEnd/',
+// };
 
 // Get a reference to your Firestore location
 const firestore = admin.firestore();

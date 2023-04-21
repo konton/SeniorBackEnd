@@ -3,12 +3,15 @@ from firebase_admin import credentials
 from firebase_admin import db
 import numpy as np
 from scipy.signal import bessel, filtfilt, find_peaks
-from numpy import asarray
-from numpy import savetxt
 
 
+# cred = credentials.Certificate(
+#     r"/Users/dome/Desktop/Senior Project/SeniorBackEnd/admin.json")
+# firebase_admin.initialize_app(cred, {
+#     'databaseURL': 'https://fluted-arch-341414-default-rtdb.asia-southeast1.firebasedatabase.app/'
+# })
 cred = credentials.Certificate(
-    r"/Users/dome/Desktop/Senior Project/SeniorBackEnd/admin.json")
+    r"C:\Users\konto\OneDrive\เดสก์ท็อป\Senior\testserver/admin.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://fluted-arch-341414-default-rtdb.asia-southeast1.firebasedatabase.app/'
 })
